@@ -1,0 +1,22 @@
+body {
+	padding: 0;
+	margin: 0;
+	font-family: times new rowman;
+}
+.text1 {
+	position: absolute;
+	left: 45%;
+}
+.text2 {
+	position: absolute;
+	left: 3%;
+}
+.containerData {
+	position: absolute;
+	top: 18%;
+	left: 26%;
+}
+.containerViewData {
+	position: absolute;
+	top: 18%;
+}

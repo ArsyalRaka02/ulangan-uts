@@ -1,0 +1,171 @@
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>Ulangan Uts</title>
+	<link rel="stylesheet" type="text/css" href="css/stlye.css">
+</head>
+<body>
+	<h1>Table Anggota</h1>
+	<div>
+		<table cellspacing="0" cellpadding="10" border="1">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>Nama</th>
+					<th>Jenis Kelamin</th>
+					<th>Alamat</th>
+					<th>No Telfon</th>
+					<th>Opsi</th>
+				</tr>
+			</thead>
+			<tbody id="liatData">
+				
+			</tbody>
+		</table>
+	</div>
+
+	<h1>Tambah Anggota</h1>
+		<table border="1" cellpadding="10" cellspacing="0">
+			<tr id="kedit">
+				<td>Id Anggota</td>
+				<td><input type="text" name="id"/></td>
+			</tr>
+				<input type="hidden" name="id" disabled /></td>
+			</tr>
+			<tr>
+				<td>Nama Anggota</td>
+				<td><input type="text" name="nama_anggota"/></td>
+			</tr>
+			<tr>
+				<td>Jenis Kelamin</td>
+				<td>
+					<select name="jk">
+					<option value="1">Laki-laki</option>
+					<option value="2">Perempuan</option>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Alamat</td>
+				<td><input type="text" name="alamat"/></td>
+			</tr>
+			<tr>
+				<td>No Telfon</td>
+				<td><input type="text" name="no_telpon"/></td>
+			</tr>
+			<tr>
+				<td colspan="5" align="right"><button id="tombolData" onclick = "tambahData()">Tambah Data</button><button id="tombolUpdate" onclick = "updateData()">Update Data</button></td>
+			</tr>
+		</table>
+	<div>
+	<p id="notice"></p>	
+	</div>
+</body>
+<script src="js/jquery.js"></script>
+<script type="text/javascript">
+
+	onload();
+
+	function tambahData() {
+		var id_anggota    = $("[name = 'id'").val();
+		var nama_anggota  = $("[name = 'nama_anggota']").val();
+		var jk 			  = $("[name = 'jk']").val();
+		var alamat  	  = $("[name = 'alamat']").val();
+		var no_telpon  	  = $("[name = 'no_telpon']").val();
+
+		$.ajax({
+			type : 'POST',
+			data : "id="+id_anggota+"&nama_anggota= "+nama_anggota+"&jk= "+jk+"&alamat= "+alamat+"&no_telpon= "+no_telpon,
+			url  : 'tambahData.php',
+			success : (result)=>{
+				var objResult = JSON.parse(result);
+				$("#notice").html(objResult.pesan);
+				onload();
+			}
+		})
+
+	}
+
+	function updateData(){
+		var id_anggota    = $("[name = 'id'").val();
+		var nama_anggota  = $("[name = 'nama_anggota']").val();
+		var jk 			  = $("[name = 'jk']").val();
+		var alamat  	  = $("[name = 'alamat']").val();
+		var no_telpon  	  = $("[name = 'no_telpon']").val();
+
+		$.ajax({
+			type : 'POST',
+			data : "id="+id_anggota+"&nama_anggota= "+nama_anggota+"&jk= "+jk+"&alamat= "+alamat+"&no_telpon= "+no_telpon,
+			url  : 'updateData.php',
+			success : (result)=>{
+				var objResult = JSON.parse(result);
+				$("kedit").show();
+				$("#notice").html(objResult.pesan);
+				onload();
+			}
+		})
+	}
+
+	function pilihData(idx) {
+		var id = idx;
+		$.ajax({
+			type : 'POST',
+			data : "id="+id,
+			url  : 'ambilId.php',
+			success : (result)=>{
+				var objResult = JSON.parse(result);
+				$('#kedit').hide();
+				$("[name = 'id'").val(objResult.id_anggota);
+				$("[name = 'nama_anggota'").val(objResult.nama_anggota);
+				$("[name = 'jk'").val(objResult.jk);
+				$("[name = 'alamat'").val(objResult.alamat);
+				$("[name = 'no_telpon'").val(objResult.no_telpon);
+				$("#tombolData").hide();
+				$("#tombolUpdate").show();
+			}
+		})
+	}
+
+	function hapusData(id){
+		var tanya = confirm("Apakah Mau di hapus?");
+		if (tanya) {
+		$.ajax({
+			type : 'POST',
+			data : "id="+id,
+			url  : 'hapus.php',
+			success : (result)=>{
+				onload();
+			}
+		})
+	}
+}
+
+	function onload(){
+		var dataHandler = $(liatData);
+		dataHandler.html("");
+	$.ajax({
+		url: 'ambilData.php',
+		type: 'GET',
+		success : function(result){
+			var objResult = JSON.parse(result);
+			var no = 1;
+			$.each(objResult, (key, val)=>{
+				if (val.jk == 1) {
+					var jenis = "Laki-laki";
+				}else if (val.jk == 2) {
+					var jenis = "Perempuan";
+				}
+				var barisData = $("<tr>");
+				barisData.html("<td>"+no+"</td><td>"+val.nama_anggota+"</td><td>"+jenis+"</td><td>"+val.alamat+"</td><td>"+val.no_telpon+"</td><td><button onClick='pilihData("+val.id_anggota+")'>Edit</button>||<button onClick='hapusData("+val.id_anggota+")'>Hapus</button></td>")
+				dataHandler.append(barisData);
+				no++;
+				$("#tombolUpdate").hide();
+				$("#tombolData").show();
+			})
+		}
+	})	
+	}	
+
+</script>
+</html>
