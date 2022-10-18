@@ -20,3 +20,7 @@ body {
 	position: absolute;
 	top: 18%;
 }
+::selection {
+    background: #b4ff39;
+    color: #170f1e;
+}
